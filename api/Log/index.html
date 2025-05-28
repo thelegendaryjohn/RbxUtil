@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="plugin-moonwave plugin-id-moonwave" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.7.0">
+<title data-rh="true">Log | RbxUtil</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://thelegendaryjohn.github.io/RbxUtil/api/Log"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docusaurus_tag" content="default"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:docusaurus_tag" content="default"><meta data-rh="true" property="og:title" content="Log | RbxUtil"><meta data-rh="true" name="description" content="Log class for logging to the AnalyticsService (e.g. PlayFab). The API
+is based off of Google&#x27;s [Flogger](https://google.github.io/flogger/)
+fluent logging API.
+
+```lua
+local Log = require(somewhere.Log)
+local logger = Log.new()
+
+-- Log a simple message:
+logger:AtInfo():Log(&quot;Hello world!&quot;)
+
+-- Log only every 3 messages:
+for i = 1,20 do
+	logger:AtInfo():Every(3):Log(&quot;Hi there!&quot;)
+end
+
+-- Log only every 1 second:
+for i = 1,100 do
+	logger:AtInfo():AtMostEvery(3, Log.TimeUnit.Seconds):Log(&quot;Hello!&quot;)
+	task.wait(0.1)
+end
+
+-- Wrap the above example into a function:
+local log = logger:AtInfo():AtMostEvery(3, Log.TimeUnit.Seconds):Wrap()
+for i = 1,100 do
+	log(&quot;Hello!&quot;)
+	task.wait(0.1)
+end
+
+-- Assertion:
+logger:Assert(typeof(32) == &quot;number&quot;, &quot;Somehow 32 is no longer a number&quot;)
+```
+
+------------
+
+### LogConfig
+
+A LogConfig ModuleScript is expected to exist somewhere within ReplicatedStorage
+as well. This ModuleScript defines the behavior for the logger. If not found,
+the logger will default to the Debug log level for all operations.
+
+For instance, this could be a script located at `ReplicatedStorage.MyGameConfig.LogConfig`. There
+just needs to be some `LogConfig`-named ModuleScript within ReplicatedStorage.
+
+Below are a few examples of possible LogConfig ModuleScripts:
+
+```lua
+-- Set &quot;Info&quot; as default log level for all environments:
+return &quot;Info&quot;
+```
+
+```lua
+-- To set a configuration that is different while in Studio:
+return {
+	Studio = &quot;Debug&quot;;
+	Other = &quot;Warn&quot;; -- &quot;Other&quot; can be anything other than Studio (e.g. could be named &quot;Default&quot;)
+}
+```
+
+```lua
+-- Fine-tune between server and client:
+return {
+	Studio = {
+		Server = &quot;Info&quot;;
+		Client = &quot;Debug&quot;;
+	};
+	Other = &quot;Warn&quot;;
+}
+```
+
+```lua
+-- Fine-tune based on PlaceIds:
+return {
+	Studio = {
+		Server = &quot;Info&quot;;
+		Client = &quot;Debug&quot;;
+	};
+	Other = {
+		PlaceIds = {123456, 234567}
+		Server = &quot;Severe&quot;;
+		Client = &quot;Warn&quot;;
+	};
+}
+```
+
+```lua
+-- Fine-tune based on GameIds:
+return {
+	Studio = {
+		Server = &quot;Info&quot;;
+		Client = &quot;Debug&quot;;
+	};
+	Other = {
+		GameIds = {123456, 234567}
+		Server = &quot;Severe&quot;;
+		Client = &quot;Warn&quot;;
+	};
+}
+```
+
+```lua
+-- Example of full-scale config with multiple environments:
+return {
+	Studio = {
+		Server = &quot;Debug&quot;;
+		Client = &quot;Debug&quot;;
+	};
+	Dev = {
+		PlaceIds = {1234567};
+		Server = &quot;Info&quot;;
+		Client = &quot;Info&quot;;
+	};
+	Prod = {
+		PlaceIds = {2345678};
+		Server = &quot;Severe&quot;;
+		Client = &quot;Warn&quot;;
+	};
+	Default = &quot;Info&quot;;
+}
+```"><meta data-rh="true" property="og:description" content="Log class for logging to the AnalyticsService (e.g. PlayFab). The API
+is based off of Google&#x27;s [Flogger](https://google.github.io/flogger/)
+fluent logging API.
+
+```lua
+local Log = require(somewhere.Log)
+local logger = Log.new()
+
+-- Log a simple message:
+logger:AtInfo():Log(&quot;Hello world!&quot;)
+
+-- Log only every 3 messages:
+for i = 1,20 do
+	logger:AtInfo():Every(3):Log(&quot;Hi there!&quot;)
+end
+
+-- Log only every 1 second:
+for i = 1,100 do
+	logger:AtInfo():AtMostEvery(3, Log.TimeUnit.Seconds):Log(&quot;Hello!&quot;)
+	task.wait(0.1)
+end
+
+-- Wrap the above example into a function:
+local log = logger:AtInfo():AtMostEvery(3, Log.TimeUnit.Seconds):Wrap()
+for i = 1,100 do
+	log(&quot;Hello!&quot;)
+	task.wait(0.1)
+end
+
+-- Assertion:
+logger:Assert(typeof(32) == &quot;number&quot;, &quot;Somehow 32 is no longer a number&quot;)
+```
+
+------------
+
+### LogConfig
+
+A LogConfig ModuleScript is expected to exist somewhere within ReplicatedStorage
+as well. This ModuleScript defines the behavior for the logger. If not found,
+the logger will default to the Debug log level for all operations.
+
+For instance, this could be a script located at `ReplicatedStorage.MyGameConfig.LogConfig`. There
+just needs to be some `LogConfig`-named ModuleScript within ReplicatedStorage.
+
+Below are a few examples of possible LogConfig ModuleScripts:
+
+```lua
+-- Set &quot;Info&quot; as default log level for all environments:
+return &quot;Info&quot;
+```
+
+```lua
+-- To set a configuration that is different while in Studio:
+return {
+	Studio = &quot;Debug&quot;;
+	Other = &quot;Warn&quot;; -- &quot;Other&quot; can be anything other than Studio (e.g. could be named &quot;Default&quot;)
+}
+```
+
+```lua
+-- Fine-tune between server and client:
+return {
+	Studio = {
+		Server = &quot;Info&quot;;
+		Client = &quot;Debug&quot;;
+	};
+	Other = &quot;Warn&quot;;
+}
+```
+
+```lua
+-- Fine-tune based on PlaceIds:
+return {
+	Studio = {
+		Server = &quot;Info&quot;;
+		Client = &quot;Debug&quot;;
+	};
+	Other = {
+		PlaceIds = {123456, 234567}
+		Server = &quot;Severe&quot;;
+		Client = &quot;Warn&quot;;
+	};
+}
+```
+
+```lua
+-- Fine-tune based on GameIds:
+return {
+	Studio = {
+		Server = &quot;Info&quot;;
+		Client = &quot;Debug&quot;;
+	};
+	Other = {
+		GameIds = {123456, 234567}
+		Server = &quot;Severe&quot;;
+		Client = &quot;Warn&quot;;
+	};
+}
+```
+
+```lua
+-- Example of full-scale config with multiple environments:
+return {
+	Studio = {
+		Server = &quot;Debug&quot;;
+		Client = &quot;Debug&quot;;
+	};
+	Dev = {
+		PlaceIds = {1234567};
+		Server = &quot;Info&quot;;
+		Client = &quot;Info&quot;;
+	};
+	Prod = {
+		PlaceIds = {2345678};
+		Server = &quot;Severe&quot;;
+		Client = &quot;Warn&quot;;
+	};
+	Default = &quot;Info&quot;;
+}
+```"><link data-rh="true" rel="canonical" href="https://thelegendaryjohn.github.io/RbxUtil/api/Log"><link data-rh="true" rel="alternate" href="https://thelegendaryjohn.github.io/RbxUtil/api/Log" hreflang="en"><link data-rh="true" rel="alternate" href="https://thelegendaryjohn.github.io/RbxUtil/api/Log" hreflang="x-default"><link rel="stylesheet" href="/RbxUtil/assets/css/styles.5cbed574.css">
+<script src="/RbxUtil/assets/js/runtime~main.34d296ce.js" defer="defer"></script>
+<script src="/RbxUtil/assets/js/main.5346ca6d.js" defer="defer"></script>
+</head>
+<body class="navigation-with-keyboard">
+<script>!function(){function t(t){document.documentElement.setAttribute("data-theme",t)}var e=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();null!==e?t(e):window.matchMedia("(prefers-color-scheme: dark)").matches?t("dark"):(window.matchMedia("(prefers-color-scheme: light)").matches,t("light"))}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="navbar navbar--fixed-top"><div class="navbar__inner"><div class="navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/RbxUtil/"><b class="navbar__title text--truncate">RbxUtil</b></a><a class="navbar__item navbar__link" href="/RbxUtil/docs/intro">Docs</a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/RbxUtil/api/">API</a></div><div class="navbar__items navbar__items--right"><a href="https://github.com/Sleitnick/RbxUtil" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="Switch between dark and light mode (currently light mode)" aria-label="Switch between dark and light mode (currently light mode)" aria-live="polite" aria-pressed="false"><svg viewBox="0 0 24 24" width="24" height="24" class="lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" class="darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"><div class="navbar__search"><span aria-label="expand searchbar" role="button" class="search-icon" tabindex="0"></span><input id="search_input_react" type="search" placeholder="Loading..." aria-label="Search" class="navbar__search-input search-bar" disabled=""></div></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="main-wrapper mainWrapper_z2l0 docPageContainer_wNNk"><div class="docPage_Dpn1"><div class="docSidebarContainer_o_re"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/RbxUtil/api/BufferUtil">BufferUtil</a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/RbxUtil/api/Input">Input</a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/RbxUtil/api/Comm">Remote Comm</a></div></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Component">​Component</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Concur">​Concur</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/EnumList">​Enum​List</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Find">​Find</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Loader">​Loader</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" href="/RbxUtil/api/Log">​Log</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Net">​Net</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Option">​Option</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/PID">​P​I​D</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Quaternion">​Quaternion</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Sequent">​Sequent</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Ser">​Ser</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Shake">​Shake</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Signal">​Signal</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Silo">​Silo</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Spring">​Spring</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Streamable">​Streamable</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/StreamableUtil">​Streamable​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Symbol">​Symbol</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/TableUtil">​Table​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/TaskQueue">​Task​Queue</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Timer">​Timer</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Tree">​Tree</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Trove">​Trove</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/TypedRemote">​Typed​Remote</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/WaitFor">​Wait​For</a></li></ul></nav></div></div><main class="docMainContainer_HJE1"><div class="container padding-vert--lg"><div class="row"><div class="col docItemCol_MU3C"><div class="docItemContainer_Wv98"><article><div class="member_J0w1 markdown"><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_oUs_"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><header><h1 class="docTitle_mZRt" style="text-decoration:none"><span style="display:inline-block">Log</span></h1><div class="luaClassTags_EipM"><span class="badge_Ba2I" style="color:#00CC67"><span class="badgeTooltip_cWXP">This item only works when running on the server.</span><span class="badgeToolTipTail_H9D_"><svg fill="#00CC67" xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" viewBox="0 0 90 90" role="img" aria-label="This item only works when running on the server."><polygon points="6.125,72.421 58.544,88.523 58.544,24.372 6.125,8.269 "></polygon><polygon points="79.818,15.77 79.868,15.755 29.615,1.453 10.328,6.318 60.102,21.609 "></polygon><path d="M61.643,78.738l22.232-6.582V17.801l-22.232,6.584V78.738z M73.811,69.257c-1.174,0-2.125-1.19-2.125-2.659  c0-1.468,0.951-2.658,2.125-2.658c1.172,0,2.123,1.19,2.123,2.658C75.934,68.066,74.982,69.257,73.811,69.257z M64.898,32.121  l16.336-4.41v7.117l-16.336,4.409V32.121z M64.898,41.292l16.336-4.41v7.116l-16.336,4.409V41.292z M64.898,50.463l16.336-4.411  v7.116l-16.336,4.411V50.463z"></path><polygon points="83.875,74.893 61.643,81.477 61.643,88.547 83.875,81.963 "></polygon></svg> <!-- -->Server</span></span></div><div>
+<p>
+  Log class for logging to the AnalyticsService (e.g. PlayFab). The API
+  is based off of Google's <a href="https://google.github.io/flogger/">Flogger</a>
+  fluent logging API.
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> Log <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span>somewhere<span class="token punctuation">.</span>Log<span class="token punctuation">)</span>
+<span class="token keyword">local</span> logger <span class="token operator">=</span> Log<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">-- Log a simple message:</span>
+logger<span class="token punctuation">:</span><span class="token function">AtInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token function">Log</span><span class="token punctuation">(</span><span class="token string">"Hello world!"</span><span class="token punctuation">)</span>
+
+<span class="token comment">-- Log only every 3 messages:</span>
+<span class="token keyword">for</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">20</span> <span class="token keyword">do</span>
+	logger<span class="token punctuation">:</span><span class="token function">AtInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token function">Every</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token function">Log</span><span class="token punctuation">(</span><span class="token string">"Hi there!"</span><span class="token punctuation">)</span>
+<span class="token keyword">end</span>
+
+<span class="token comment">-- Log only every 1 second:</span>
+<span class="token keyword">for</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">100</span> <span class="token keyword">do</span>
+	logger<span class="token punctuation">:</span><span class="token function">AtInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token function">AtMostEvery</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">,</span> Log<span class="token punctuation">.</span>TimeUnit<span class="token punctuation">.</span>Seconds<span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token function">Log</span><span class="token punctuation">(</span><span class="token string">"Hello!"</span><span class="token punctuation">)</span>
+	task<span class="token punctuation">.</span><span class="token function">wait</span><span class="token punctuation">(</span><span class="token number">0.1</span><span class="token punctuation">)</span>
+<span class="token keyword">end</span>
+
+<span class="token comment">-- Wrap the above example into a function:</span>
+<span class="token keyword">local</span> log <span class="token operator">=</span> logger<span class="token punctuation">:</span><span class="token function">AtInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token function">AtMostEvery</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">,</span> Log<span class="token punctuation">.</span>TimeUnit<span class="token punctuation">.</span>Seconds<span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token function">Wrap</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">for</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">100</span> <span class="token keyword">do</span>
+	<span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"Hello!"</span><span class="token punctuation">)</span>
+	task<span class="token punctuation">.</span><span class="token function">wait</span><span class="token punctuation">(</span><span class="token number">0.1</span><span class="token punctuation">)</span>
+<span class="token keyword">end</span>
+
+<span class="token comment">-- Assertion:</span>
+logger<span class="token punctuation">:</span><span class="token function">Assert</span><span class="token punctuation">(</span><span class="token function">typeof</span><span class="token punctuation">(</span><span class="token number">32</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token string">"number"</span><span class="token punctuation">,</span> <span class="token string">"Somehow 32 is no longer a number"</span><span class="token punctuation">)</span>
+</code></pre>
+<hr>
+<h3>LogConfig</h3>
+<p>
+  A LogConfig ModuleScript is expected to exist somewhere within ReplicatedStorage
+  as well. This ModuleScript defines the behavior for the logger. If not found,
+  the logger will default to the Debug log level for all operations.
+</p>
+<p>
+  For instance, this could be a script located at <code>ReplicatedStorage.MyGameConfig.LogConfig</code>. There
+  just needs to be some <code>LogConfig</code>-named ModuleScript within ReplicatedStorage.
+</p>
+<p>Below are a few examples of possible LogConfig ModuleScripts:</p>
+<pre class="language-lua"><code class="language-lua"><span class="token comment">-- Set "Info" as default log level for all environments:</span>
+<span class="token keyword">return</span> <span class="token string">"Info"</span>
+</code></pre>
+<pre class="language-lua"><code class="language-lua"><span class="token comment">-- To set a configuration that is different while in Studio:</span>
+<span class="token keyword">return</span> <span class="token punctuation">{</span>
+	Studio <span class="token operator">=</span> <span class="token string">"Debug"</span><span class="token punctuation">;</span>
+	Other <span class="token operator">=</span> <span class="token string">"Warn"</span><span class="token punctuation">;</span> <span class="token comment">-- "Other" can be anything other than Studio (e.g. could be named "Default")</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<pre class="language-lua"><code class="language-lua"><span class="token comment">-- Fine-tune between server and client:</span>
+<span class="token keyword">return</span> <span class="token punctuation">{</span>
+	Studio <span class="token operator">=</span> <span class="token punctuation">{</span>
+		Server <span class="token operator">=</span> <span class="token string">"Info"</span><span class="token punctuation">;</span>
+		Client <span class="token operator">=</span> <span class="token string">"Debug"</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span class="token punctuation">;</span>
+	Other <span class="token operator">=</span> <span class="token string">"Warn"</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<pre class="language-lua"><code class="language-lua"><span class="token comment">-- Fine-tune based on PlaceIds:</span>
+<span class="token keyword">return</span> <span class="token punctuation">{</span>
+	Studio <span class="token operator">=</span> <span class="token punctuation">{</span>
+		Server <span class="token operator">=</span> <span class="token string">"Info"</span><span class="token punctuation">;</span>
+		Client <span class="token operator">=</span> <span class="token string">"Debug"</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span class="token punctuation">;</span>
+	Other <span class="token operator">=</span> <span class="token punctuation">{</span>
+		PlaceIds <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">123456</span><span class="token punctuation">,</span> <span class="token number">234567</span><span class="token punctuation">}</span>
+		Server <span class="token operator">=</span> <span class="token string">"Severe"</span><span class="token punctuation">;</span>
+		Client <span class="token operator">=</span> <span class="token string">"Warn"</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<pre class="language-lua"><code class="language-lua"><span class="token comment">-- Fine-tune based on GameIds:</span>
+<span class="token keyword">return</span> <span class="token punctuation">{</span>
+	Studio <span class="token operator">=</span> <span class="token punctuation">{</span>
+		Server <span class="token operator">=</span> <span class="token string">"Info"</span><span class="token punctuation">;</span>
+		Client <span class="token operator">=</span> <span class="token string">"Debug"</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span class="token punctuation">;</span>
+	Other <span class="token operator">=</span> <span class="token punctuation">{</span>
+		GameIds <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">123456</span><span class="token punctuation">,</span> <span class="token number">234567</span><span class="token punctuation">}</span>
+		Server <span class="token operator">=</span> <span class="token string">"Severe"</span><span class="token punctuation">;</span>
+		Client <span class="token operator">=</span> <span class="token string">"Warn"</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<pre class="language-lua"><code class="language-lua"><span class="token comment">-- Example of full-scale config with multiple environments:</span>
+<span class="token keyword">return</span> <span class="token punctuation">{</span>
+	Studio <span class="token operator">=</span> <span class="token punctuation">{</span>
+		Server <span class="token operator">=</span> <span class="token string">"Debug"</span><span class="token punctuation">;</span>
+		Client <span class="token operator">=</span> <span class="token string">"Debug"</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span class="token punctuation">;</span>
+	Dev <span class="token operator">=</span> <span class="token punctuation">{</span>
+		PlaceIds <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">1234567</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+		Server <span class="token operator">=</span> <span class="token string">"Info"</span><span class="token punctuation">;</span>
+		Client <span class="token operator">=</span> <span class="token string">"Info"</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span class="token punctuation">;</span>
+	Prod <span class="token operator">=</span> <span class="token punctuation">{</span>
+		PlaceIds <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">2345678</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+		Server <span class="token operator">=</span> <span class="token string">"Severe"</span><span class="token punctuation">;</span>
+		Client <span class="token operator">=</span> <span class="token string">"Warn"</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span class="token punctuation">;</span>
+	Default <span class="token operator">=</span> <span class="token string">"Info"</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+</div></header><h2 class="anchor anchorWithStickyNavbar_LWe7" id="types">Types<a href="#types" class="hash-link" aria-label="Direct link to Types" title="Direct link to Types">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="LogItem"><code style="text-decoration:none">LogItem</code><a href="#LogItem" class="hash-link" aria-label="Direct link to LogItem" title="Direct link to LogItem">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/log/init.luau#L461"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code class="purple_ieR2">interface</code> <code>LogItem<!-- --> <!-- -->{</code><div class="inset_uKQm"><div><code>Log<!-- -->: </code><code class="purple_ieR2">(</code><div class="inset_uKQm"><code>message<!-- -->: </code><code class="blue_P4bS">any</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>customData<!-- -->: </code><code class="blue_P4bS">table?</code></div><code class="purple_ieR2">)</code><span class="inlineDescription_G7Er">-- <span>
+<p>Log the message</p>
+</span></span></div><div><code>Every<!-- -->: </code><code class="purple_ieR2">(</code><code>n<!-- -->: </code><code class="blue_P4bS">number</code><code class="purple_ieR2">)</code><span class="inlineDescription_G7Er">-- <span>
+<p>Log only every <code>n</code> times</p>
+</span></span></div><div><code>AtMostEvery<!-- -->: </code><code class="purple_ieR2">(</code><div class="inset_uKQm"><code>n<!-- -->: </code><code class="blue_P4bS">number</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>timeUnit<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Log#TimeUnit">TimeUnit</a></code></div><code class="purple_ieR2">)</code><span class="inlineDescription_G7Er">-- <span>
+<p>Log only every <code>n</code> <code>TimeUnit</code></p>
+</span></span></div><div><code>Throw<!-- -->: </code><code class="purple_ieR2">(</code><code class="purple_ieR2">)</code><span class="inlineDescription_G7Er">-- <span>
+<p>Throw an error</p>
+</span></span></div><div><code>Wrap<!-- -->: </code><code class="purple_ieR2">(</code><code class="purple_ieR2">)</code><span class="inlineDescription_G7Er">-- <span>
+<p>Returns a function that can be called which will log out the given arguments</p>
+</span></span></div><div><code>Assert<!-- -->: </code><code class="purple_ieR2">(</code><div class="inset_uKQm"><code>condition<!-- -->: </code><code class="blue_P4bS">boolean</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>args<!-- -->: </code><code class="blue_P4bS">...</code></div><code class="purple_ieR2">)</code><span class="inlineDescription_G7Er">-- <span>
+<p>Assert the condition</p>
+</span></span></div></div><code>}</code></div><div></div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="TimeUnit"><code style="text-decoration:none">TimeUnit</code><a href="#TimeUnit" class="hash-link" aria-label="Direct link to TimeUnit" title="Direct link to TimeUnit">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/log/init.luau#L474"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code class="purple_ieR2">interface</code> <code>TimeUnit<!-- --> <!-- -->{</code><div class="inset_uKQm"><div><code>Milliseconds<!-- -->: </code><code class="blue_P4bS">number</code></div><div><code>Seeconds<!-- -->: </code><code class="blue_P4bS">number</code></div><div><code>Minutes<!-- -->: </code><code class="blue_P4bS">number</code></div><div><code>Hours<!-- -->: </code><code class="blue_P4bS">number</code></div><div><code>Days<!-- -->: </code><code class="blue_P4bS">number</code></div><div><code>Weeks<!-- -->: </code><code class="blue_P4bS">number</code></div><div><code>Months<!-- -->: </code><code class="blue_P4bS">number</code></div><div><code>Years<!-- -->: </code><code class="blue_P4bS">number</code></div></div><code>}</code></div><div></div><h2 class="anchor anchorWithStickyNavbar_LWe7" id="properties">Properties<a href="#properties" class="hash-link" aria-label="Direct link to Properties" title="Direct link to Properties">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="TimeUnit"><code style="text-decoration:none">TimeUnit</code><a href="#TimeUnit" class="hash-link" aria-label="Direct link to TimeUnit" title="Direct link to TimeUnit">​</a></h3><span class="badge_Ba2I" style="color:#e74c3c"><span class="badgeTooltip_cWXP">This item is read only and cannot be modified.</span><span class="badgeToolTipTail_H9D_"><svg xmlns="http://www.w3.org/2000/svg" height="300px" width="300px" fill="#e74c3c" x="0px" y="0px" viewBox="0 0 96 96"><path d="M70.354,15.662h-7.496H25.566c-3.282,0-5.19-0.776-5.728-1.169v-1.456c0.538-0.393,2.445-1.168,5.728-1.168h46.479V8H25.566  c-4.776,0-9.594,1.468-9.594,4.747v61.458C15.972,86.645,20.328,88,37.495,88h42.535V15.662H70.354z"></path></svg> <!-- -->Read Only</span></span><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/log/init.luau#L491"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Log<!-- -->.<!-- -->TimeUnit<!-- -->:<!-- --> </code> <code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Log#TimeUnit">TimeUnit</a></code></div><div></div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Level"><code style="text-decoration:none">Level</code><a href="#Level" class="hash-link" aria-label="Direct link to Level" title="Direct link to Level">​</a></h3><span class="badge_Ba2I" style="color:#e74c3c"><span class="badgeTooltip_cWXP">This item is read only and cannot be modified.</span><span class="badgeToolTipTail_H9D_"><svg xmlns="http://www.w3.org/2000/svg" height="300px" width="300px" fill="#e74c3c" x="0px" y="0px" viewBox="0 0 96 96"><path d="M70.354,15.662h-7.496H25.566c-3.282,0-5.19-0.776-5.728-1.169v-1.456c0.538-0.393,2.445-1.168,5.728-1.168h46.479V8H25.566  c-4.776,0-9.594,1.468-9.594,4.747v61.458C15.972,86.645,20.328,88,37.495,88h42.535V15.662H70.354z"></path></svg> <!-- -->Read Only</span></span><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/log/init.luau#L497"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Log<!-- -->.<!-- -->Level<!-- -->:<!-- --> </code> <code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Log#Level">Level</a></code></div><div></div><h2 class="anchor anchorWithStickyNavbar_LWe7" id="functions">Functions<a href="#functions" class="hash-link" aria-label="Direct link to Functions" title="Direct link to Functions">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="new"><code style="text-decoration:none">new</code><a href="#new" class="hash-link" aria-label="Direct link to new" title="Direct link to new">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/log/init.luau#L514"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Log<!-- -->.</code><code class="green_DgR4">new</code><code>(</code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Log">Log</a></code></div><div>
+<p>Construct a new Log object.</p>
+
+  
+    
+    
+      <div class="admonition admonition-warning alert alert--warning">
+        <div class="admonition-heading">
+          <h5><span class="admonition-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                <path d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z"></path>
+              </svg></span><span class="admonition-title">WARNING</span></h5>
+        </div>
+        <div class="admonition-content">
+          <p>This should only be called once per script.</p>
+        </div>
+      </div>
+    
+  
+
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="At"><code style="text-decoration:none">At</code><a href="#At" class="hash-link" aria-label="Direct link to At" title="Direct link to At">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/log/init.luau#L546"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Log<!-- -->:</code><code class="green_DgR4">At</code><code>(</code><code>level<!-- -->: </code><code class="blue_P4bS">LogLevel</code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Log#LogItem">LogItem</a></code></div><h3>Types</h3><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Level"><a href="#Level" class="hash-link" aria-label="Direct link to Level" title="Direct link to Level">​</a></h3><div class="memberString_GwaU"><code class="purple_ieR2">interface</code> <code>Level<!-- --> <!-- -->{</code><div class="inset_uKQm"><div><code>Trace<!-- -->: </code><code class="blue_P4bS">number</code></div><div><code>Debug<!-- -->: </code><code class="blue_P4bS">number</code></div><div><code>Info<!-- -->: </code><code class="blue_P4bS">number</code></div><div><code>Warning<!-- -->: </code><code class="blue_P4bS">number</code></div><div><code>Error<!-- -->: </code><code class="blue_P4bS">number</code></div><div><code>Fatal<!-- -->: </code><code class="blue_P4bS">number</code></div></div><code>}</code></div><div></div><div></div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="AtTrace"><code style="text-decoration:none">AtTrace</code><a href="#AtTrace" class="hash-link" aria-label="Direct link to AtTrace" title="Direct link to AtTrace">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/log/init.luau#L554"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Log<!-- -->:</code><code class="green_DgR4">AtTrace</code><code>(</code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Log#LogItem">LogItem</a></code></div><div>
+<p>Get a LogItem at the Trace log level.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="AtDebug"><code style="text-decoration:none">AtDebug</code><a href="#AtDebug" class="hash-link" aria-label="Direct link to AtDebug" title="Direct link to AtDebug">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/log/init.luau#L562"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Log<!-- -->:</code><code class="green_DgR4">AtDebug</code><code>(</code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Log#LogItem">LogItem</a></code></div><div>
+<p>Get a LogItem at the Debug log level.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="AtInfo"><code style="text-decoration:none">AtInfo</code><a href="#AtInfo" class="hash-link" aria-label="Direct link to AtInfo" title="Direct link to AtInfo">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/log/init.luau#L570"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Log<!-- -->:</code><code class="green_DgR4">AtInfo</code><code>(</code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Log#LogItem">LogItem</a></code></div><div>
+<p>Get a LogItem at the Info log level.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="AtWarning"><code style="text-decoration:none">AtWarning</code><a href="#AtWarning" class="hash-link" aria-label="Direct link to AtWarning" title="Direct link to AtWarning">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/log/init.luau#L578"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Log<!-- -->:</code><code class="green_DgR4">AtWarning</code><code>(</code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Log#LogItem">LogItem</a></code></div><div>
+<p>Get a LogItem at the Warning log level.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="AtError"><code style="text-decoration:none">AtError</code><a href="#AtError" class="hash-link" aria-label="Direct link to AtError" title="Direct link to AtError">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/log/init.luau#L586"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Log<!-- -->:</code><code class="green_DgR4">AtError</code><code>(</code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Log#LogItem">LogItem</a></code></div><div>
+<p>Get a LogItem at the Error log level.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="AtFatal"><code style="text-decoration:none">AtFatal</code><a href="#AtFatal" class="hash-link" aria-label="Direct link to AtFatal" title="Direct link to AtFatal">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/log/init.luau#L594"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Log<!-- -->:</code><code class="green_DgR4">AtFatal</code><code>(</code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Log#LogItem">LogItem</a></code></div><div>
+<p>Get a LogItem at the Fatal log level.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Assert"><code style="text-decoration:none">Assert</code><a href="#Assert" class="hash-link" aria-label="Direct link to Assert" title="Direct link to Assert">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/log/init.luau#L605"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Log<!-- -->:</code><code class="green_DgR4">Assert</code><code>(</code><div class="inset_uKQm"><div><code>condition<!-- -->: </code><code class="blue_P4bS">boolean</code><code>,</code></div><div><code>...<!-- -->: </code><code class="blue_P4bS">any</code></div></div><code>) → </code><code>(</code><code>)</code></div><div>
+<p>
+  Asserts the condition and then logs the following
+  arguments at the Error level if the condition
+  fails.
+</p>
+</div></div></article></div><details><summary>Show raw api</summary><pre style="max-width:100%;white-space:pre-wrap">{
+    &quot;functions&quot;: [
+        {
+            &quot;name&quot;: &quot;new&quot;,
+            &quot;desc&quot;: &quot;Construct a new Log object.\n\n:::warning\nThis should only be called once per script.\n:::&quot;,
+            &quot;params&quot;: [],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Log&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 514,
+                &quot;path&quot;: &quot;modules/log/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;At&quot;,
+            &quot;desc&quot;: &quot;&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;level&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;LogLevel&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;LogItem&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 546,
+                &quot;path&quot;: &quot;modules/log/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;AtTrace&quot;,
+            &quot;desc&quot;: &quot;Get a LogItem at the Trace log level.&quot;,
+            &quot;params&quot;: [],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;LogItem&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 554,
+                &quot;path&quot;: &quot;modules/log/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;AtDebug&quot;,
+            &quot;desc&quot;: &quot;Get a LogItem at the Debug log level.&quot;,
+            &quot;params&quot;: [],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;LogItem&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 562,
+                &quot;path&quot;: &quot;modules/log/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;AtInfo&quot;,
+            &quot;desc&quot;: &quot;Get a LogItem at the Info log level.&quot;,
+            &quot;params&quot;: [],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;LogItem&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 570,
+                &quot;path&quot;: &quot;modules/log/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;AtWarning&quot;,
+            &quot;desc&quot;: &quot;Get a LogItem at the Warning log level.&quot;,
+            &quot;params&quot;: [],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;LogItem&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 578,
+                &quot;path&quot;: &quot;modules/log/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;AtError&quot;,
+            &quot;desc&quot;: &quot;Get a LogItem at the Error log level.&quot;,
+            &quot;params&quot;: [],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;LogItem&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 586,
+                &quot;path&quot;: &quot;modules/log/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;AtFatal&quot;,
+            &quot;desc&quot;: &quot;Get a LogItem at the Fatal log level.&quot;,
+            &quot;params&quot;: [],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;LogItem&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 594,
+                &quot;path&quot;: &quot;modules/log/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Assert&quot;,
+            &quot;desc&quot;: &quot;Asserts the condition and then logs the following\narguments at the Error level if the condition\nfails.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;condition&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;boolean&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;...&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;any&quot;
+                }
+            ],
+            &quot;returns&quot;: [],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 605,
+                &quot;path&quot;: &quot;modules/log/init.luau&quot;
+            }
+        }
+    ],
+    &quot;properties&quot;: [
+        {
+            &quot;name&quot;: &quot;TimeUnit&quot;,
+            &quot;desc&quot;: &quot;&quot;,
+            &quot;lua_type&quot;: &quot;TimeUnit&quot;,
+            &quot;readonly&quot;: true,
+            &quot;source&quot;: {
+                &quot;line&quot;: 491,
+                &quot;path&quot;: &quot;modules/log/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Level&quot;,
+            &quot;desc&quot;: &quot;&quot;,
+            &quot;lua_type&quot;: &quot;Level&quot;,
+            &quot;readonly&quot;: true,
+            &quot;source&quot;: {
+                &quot;line&quot;: 497,
+                &quot;path&quot;: &quot;modules/log/init.luau&quot;
+            }
+        }
+    ],
+    &quot;types&quot;: [
+        {
+            &quot;name&quot;: &quot;LogItem&quot;,
+            &quot;desc&quot;: &quot;&quot;,
+            &quot;fields&quot;: [
+                {
+                    &quot;name&quot;: &quot;Log&quot;,
+                    &quot;lua_type&quot;: &quot;(message: any, customData: table?)&quot;,
+                    &quot;desc&quot;: &quot;Log the message&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Every&quot;,
+                    &quot;lua_type&quot;: &quot;(n: number)&quot;,
+                    &quot;desc&quot;: &quot;Log only every `n` times&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;AtMostEvery&quot;,
+                    &quot;lua_type&quot;: &quot;(n: number, timeUnit: TimeUnit)&quot;,
+                    &quot;desc&quot;: &quot;Log only every `n` `TimeUnit`&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Throw&quot;,
+                    &quot;lua_type&quot;: &quot;()&quot;,
+                    &quot;desc&quot;: &quot;Throw an error&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Wrap&quot;,
+                    &quot;lua_type&quot;: &quot;()&quot;,
+                    &quot;desc&quot;: &quot;Returns a function that can be called which will log out the given arguments&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Assert&quot;,
+                    &quot;lua_type&quot;: &quot;(condition: boolean, args: ...)&quot;,
+                    &quot;desc&quot;: &quot;Assert the condition&quot;
+                }
+            ],
+            &quot;source&quot;: {
+                &quot;line&quot;: 461,
+                &quot;path&quot;: &quot;modules/log/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;TimeUnit&quot;,
+            &quot;desc&quot;: &quot;&quot;,
+            &quot;fields&quot;: [
+                {
+                    &quot;name&quot;: &quot;Milliseconds&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;,
+                    &quot;desc&quot;: &quot;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Seeconds&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;,
+                    &quot;desc&quot;: &quot;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Minutes&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;,
+                    &quot;desc&quot;: &quot;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Hours&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;,
+                    &quot;desc&quot;: &quot;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Days&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;,
+                    &quot;desc&quot;: &quot;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Weeks&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;,
+                    &quot;desc&quot;: &quot;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Months&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;,
+                    &quot;desc&quot;: &quot;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Years&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;,
+                    &quot;desc&quot;: &quot;&quot;
+                }
+            ],
+            &quot;source&quot;: {
+                &quot;line&quot;: 474,
+                &quot;path&quot;: &quot;modules/log/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Level&quot;,
+            &quot;desc&quot;: &quot;&quot;,
+            &quot;fields&quot;: [
+                {
+                    &quot;name&quot;: &quot;Trace&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;,
+                    &quot;desc&quot;: &quot;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Debug&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;,
+                    &quot;desc&quot;: &quot;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Info&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;,
+                    &quot;desc&quot;: &quot;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Warning&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;,
+                    &quot;desc&quot;: &quot;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Error&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;,
+                    &quot;desc&quot;: &quot;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Fatal&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;,
+                    &quot;desc&quot;: &quot;&quot;
+                }
+            ],
+            &quot;source&quot;: {
+                &quot;line&quot;: 485,
+                &quot;path&quot;: &quot;modules/log/init.luau&quot;
+            }
+        }
+    ],
+    &quot;name&quot;: &quot;Log&quot;,
+    &quot;desc&quot;: &quot;Log class for logging to the AnalyticsService (e.g. PlayFab). The API\nis based off of Google&#x27;s [Flogger](https://google.github.io/flogger/)\nfluent logging API.\n\n```lua\nlocal Log = require(somewhere.Log)\nlocal logger = Log.new()\n\n-- Log a simple message:\nlogger:AtInfo():Log(\&quot;Hello world!\&quot;)\n\n-- Log only every 3 messages:\nfor i = 1,20 do\n\tlogger:AtInfo():Every(3):Log(\&quot;Hi there!\&quot;)\nend\n\n-- Log only every 1 second:\nfor i = 1,100 do\n\tlogger:AtInfo():AtMostEvery(3, Log.TimeUnit.Seconds):Log(\&quot;Hello!\&quot;)\n\ttask.wait(0.1)\nend\n\n-- Wrap the above example into a function:\nlocal log = logger:AtInfo():AtMostEvery(3, Log.TimeUnit.Seconds):Wrap()\nfor i = 1,100 do\n\tlog(\&quot;Hello!\&quot;)\n\ttask.wait(0.1)\nend\n\n-- Assertion:\nlogger:Assert(typeof(32) == \&quot;number\&quot;, \&quot;Somehow 32 is no longer a number\&quot;)\n```\n\n------------\n\n### LogConfig\n\nA LogConfig ModuleScript is expected to exist somewhere within ReplicatedStorage\nas well. This ModuleScript defines the behavior for the logger. If not found,\nthe logger will default to the Debug log level for all operations.\n\nFor instance, this could be a script located at `ReplicatedStorage.MyGameConfig.LogConfig`. There\njust needs to be some `LogConfig`-named ModuleScript within ReplicatedStorage.\n\nBelow are a few examples of possible LogConfig ModuleScripts:\n\n```lua\n-- Set \&quot;Info\&quot; as default log level for all environments:\nreturn \&quot;Info\&quot;\n```\n\n```lua\n-- To set a configuration that is different while in Studio:\nreturn {\n\tStudio = \&quot;Debug\&quot;;\n\tOther = \&quot;Warn\&quot;; -- \&quot;Other\&quot; can be anything other than Studio (e.g. could be named \&quot;Default\&quot;)\n}\n```\n\n```lua\n-- Fine-tune between server and client:\nreturn {\n\tStudio = {\n\t\tServer = \&quot;Info\&quot;;\n\t\tClient = \&quot;Debug\&quot;;\n\t};\n\tOther = \&quot;Warn\&quot;;\n}\n```\n\n```lua\n-- Fine-tune based on PlaceIds:\nreturn {\n\tStudio = {\n\t\tServer = \&quot;Info\&quot;;\n\t\tClient = \&quot;Debug\&quot;;\n\t};\n\tOther = {\n\t\tPlaceIds = {123456, 234567}\n\t\tServer = \&quot;Severe\&quot;;\n\t\tClient = \&quot;Warn\&quot;;\n\t};\n}\n```\n\n```lua\n-- Fine-tune based on GameIds:\nreturn {\n\tStudio = {\n\t\tServer = \&quot;Info\&quot;;\n\t\tClient = \&quot;Debug\&quot;;\n\t};\n\tOther = {\n\t\tGameIds = {123456, 234567}\n\t\tServer = \&quot;Severe\&quot;;\n\t\tClient = \&quot;Warn\&quot;;\n\t};\n}\n```\n\n```lua\n-- Example of full-scale config with multiple environments:\nreturn {\n\tStudio = {\n\t\tServer = \&quot;Debug\&quot;;\n\t\tClient = \&quot;Debug\&quot;;\n\t};\n\tDev = {\n\t\tPlaceIds = {1234567};\n\t\tServer = \&quot;Info\&quot;;\n\t\tClient = \&quot;Info\&quot;;\n\t};\n\tProd = {\n\t\tPlaceIds = {2345678};\n\t\tServer = \&quot;Severe\&quot;;\n\t\tClient = \&quot;Warn\&quot;;\n\t};\n\tDefault = \&quot;Info\&quot;;\n}\n```&quot;,
+    &quot;realm&quot;: [
+        &quot;Server&quot;
+    ],
+    &quot;source&quot;: {
+        &quot;line&quot;: 448,
+        &quot;path&quot;: &quot;modules/log/init.luau&quot;
+    }
+}</pre></details></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#types" class="table-of-contents__link toc-highlight">Types</a><ul><li><a href="#Level" class="table-of-contents__link toc-highlight">Level</a></li><li><a href="#LogItem" class="table-of-contents__link toc-highlight">LogItem</a></li><li><a href="#TimeUnit" class="table-of-contents__link toc-highlight">TimeUnit</a></li></ul></li><li><a href="#properties" class="table-of-contents__link toc-highlight">Properties</a><ul><li><a href="#Level" class="table-of-contents__link toc-highlight">Level</a></li><li><a href="#TimeUnit" class="table-of-contents__link toc-highlight">TimeUnit</a></li></ul></li><li><a href="#functions" class="table-of-contents__link toc-highlight">Functions</a><ul><li><a href="#Assert" class="table-of-contents__link toc-highlight">:Assert</a></li><li><a href="#At" class="table-of-contents__link toc-highlight">:At</a></li><li><a href="#AtDebug" class="table-of-contents__link toc-highlight">:AtDebug</a></li><li><a href="#AtError" class="table-of-contents__link toc-highlight">:AtError</a></li><li><a href="#AtFatal" class="table-of-contents__link toc-highlight">:AtFatal</a></li><li><a href="#AtInfo" class="table-of-contents__link toc-highlight">:AtInfo</a></li><li><a href="#AtTrace" class="table-of-contents__link toc-highlight">:AtTrace</a></li><li><a href="#AtWarning" class="table-of-contents__link toc-highlight">:AtWarning</a></li><li><a href="#new" class="table-of-contents__link toc-highlight">.new</a></li></ul></li></ul></div></div></div></div></main></div></div><footer class="footer footer--dark"><div class="container container-fluid"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2025 thelegendaryjohn. Built with Moonwave and Docusaurus.</div></div></div></footer></div>
+</body>
+</html>

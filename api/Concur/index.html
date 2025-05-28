@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="plugin-moonwave plugin-id-moonwave" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.7.0">
+<title data-rh="true">Concur | RbxUtil</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://thelegendaryjohn.github.io/RbxUtil/api/Concur"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docusaurus_tag" content="default"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:docusaurus_tag" content="default"><meta data-rh="true" property="og:title" content="Concur | RbxUtil"><meta data-rh="true" name="description" content="Concurrency class for helping run tasks concurrently. In other words, Concur allows
+developers to watch coroutines/threads. Completion status, returned values, and
+errors can all be tracked.
+
+For instance, Concur could be used to concurrently save all player data
+at the same time when the game closes down:
+
+```lua
+game:BindToClose(function()
+	local all = {}
+	for _,player in Players:GetPlayers() do
+		local save = Concur.spawn(function()
+			DoSomethingToSaveData(player)
+		end)
+		table.insert(all, save)
+	end
+	local allConcur = Concur.all(all)
+	allConcur:Await()
+end)
+```"><meta data-rh="true" property="og:description" content="Concurrency class for helping run tasks concurrently. In other words, Concur allows
+developers to watch coroutines/threads. Completion status, returned values, and
+errors can all be tracked.
+
+For instance, Concur could be used to concurrently save all player data
+at the same time when the game closes down:
+
+```lua
+game:BindToClose(function()
+	local all = {}
+	for _,player in Players:GetPlayers() do
+		local save = Concur.spawn(function()
+			DoSomethingToSaveData(player)
+		end)
+		table.insert(all, save)
+	end
+	local allConcur = Concur.all(all)
+	allConcur:Await()
+end)
+```"><link data-rh="true" rel="canonical" href="https://thelegendaryjohn.github.io/RbxUtil/api/Concur"><link data-rh="true" rel="alternate" href="https://thelegendaryjohn.github.io/RbxUtil/api/Concur" hreflang="en"><link data-rh="true" rel="alternate" href="https://thelegendaryjohn.github.io/RbxUtil/api/Concur" hreflang="x-default"><link rel="stylesheet" href="/RbxUtil/assets/css/styles.5cbed574.css">
+<script src="/RbxUtil/assets/js/runtime~main.34d296ce.js" defer="defer"></script>
+<script src="/RbxUtil/assets/js/main.5346ca6d.js" defer="defer"></script>
+</head>
+<body class="navigation-with-keyboard">
+<script>!function(){function t(t){document.documentElement.setAttribute("data-theme",t)}var e=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();null!==e?t(e):window.matchMedia("(prefers-color-scheme: dark)").matches?t("dark"):(window.matchMedia("(prefers-color-scheme: light)").matches,t("light"))}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="navbar navbar--fixed-top"><div class="navbar__inner"><div class="navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/RbxUtil/"><b class="navbar__title text--truncate">RbxUtil</b></a><a class="navbar__item navbar__link" href="/RbxUtil/docs/intro">Docs</a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/RbxUtil/api/">API</a></div><div class="navbar__items navbar__items--right"><a href="https://github.com/Sleitnick/RbxUtil" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="Switch between dark and light mode (currently light mode)" aria-label="Switch between dark and light mode (currently light mode)" aria-live="polite" aria-pressed="false"><svg viewBox="0 0 24 24" width="24" height="24" class="lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" class="darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"><div class="navbar__search"><span aria-label="expand searchbar" role="button" class="search-icon" tabindex="0"></span><input id="search_input_react" type="search" placeholder="Loading..." aria-label="Search" class="navbar__search-input search-bar" disabled=""></div></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="main-wrapper mainWrapper_z2l0 docPageContainer_wNNk"><div class="docPage_Dpn1"><div class="docSidebarContainer_o_re"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/RbxUtil/api/BufferUtil">BufferUtil</a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/RbxUtil/api/Input">Input</a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/RbxUtil/api/Comm">Remote Comm</a></div></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Component">​Component</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" href="/RbxUtil/api/Concur">​Concur</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/EnumList">​Enum​List</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Find">​Find</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Loader">​Loader</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Log">​Log</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Net">​Net</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Option">​Option</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/PID">​P​I​D</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Quaternion">​Quaternion</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Sequent">​Sequent</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Ser">​Ser</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Shake">​Shake</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Signal">​Signal</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Silo">​Silo</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Spring">​Spring</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Streamable">​Streamable</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/StreamableUtil">​Streamable​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Symbol">​Symbol</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/TableUtil">​Table​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/TaskQueue">​Task​Queue</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Timer">​Timer</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Tree">​Tree</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/Trove">​Trove</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/TypedRemote">​Typed​Remote</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RbxUtil/api/WaitFor">​Wait​For</a></li></ul></nav></div></div><main class="docMainContainer_HJE1"><div class="container padding-vert--lg"><div class="row"><div class="col docItemCol_MU3C"><div class="docItemContainer_Wv98"><article><div class="member_J0w1 markdown"><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_oUs_"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><header><h1 class="docTitle_mZRt" style="text-decoration:none"><span style="display:inline-block">Concur</span></h1><div class="luaClassTags_EipM"></div><div>
+<p>
+  Concurrency class for helping run tasks concurrently. In other words, Concur allows
+  developers to watch coroutines/threads. Completion status, returned values, and
+  errors can all be tracked.
+</p>
+<p>
+  For instance, Concur could be used to concurrently save all player data
+  at the same time when the game closes down:
+</p>
+<pre class="language-lua"><code class="language-lua">game<span class="token punctuation">:</span><span class="token function">BindToClose</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">local</span> all <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+	<span class="token keyword">for</span> _<span class="token punctuation">,</span>player <span class="token keyword">in</span> Players<span class="token punctuation">:</span><span class="token function">GetPlayers</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">do</span>
+		<span class="token keyword">local</span> save <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">spawn</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+			<span class="token function">DoSomethingToSaveData</span><span class="token punctuation">(</span>player<span class="token punctuation">)</span>
+		<span class="token keyword">end</span><span class="token punctuation">)</span>
+		table<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span>all<span class="token punctuation">,</span> save<span class="token punctuation">)</span>
+	<span class="token keyword">end</span>
+	<span class="token keyword">local</span> allConcur <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">all</span><span class="token punctuation">(</span>all<span class="token punctuation">)</span>
+	allConcur<span class="token punctuation">:</span><span class="token function">Await</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+</code></pre>
+</div></header><h2 class="anchor anchorWithStickyNavbar_LWe7" id="types">Types<a href="#types" class="hash-link" aria-label="Direct link to Types" title="Direct link to Types">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Errors"><code style="text-decoration:none">Errors</code><a href="#Errors" class="hash-link" aria-label="Direct link to Errors" title="Direct link to Errors">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/concur/init.luau#L43"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code class="purple_ieR2">interface</code> <code>Errors<!-- --> <!-- -->{</code><div class="inset_uKQm"><div><code>Stopped<!-- -->: </code><code class="blue_P4bS">&quot;Stopped&quot;</code></div><div><code>Timeout<!-- -->: </code><code class="blue_P4bS">&quot;Timeout&quot;</code></div></div><code>}</code></div><div></div><h2 class="anchor anchorWithStickyNavbar_LWe7" id="properties">Properties<a href="#properties" class="hash-link" aria-label="Direct link to Properties" title="Direct link to Properties">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Errors"><code style="text-decoration:none">Errors</code><a href="#Errors" class="hash-link" aria-label="Direct link to Errors" title="Direct link to Errors">​</a></h3><span class="badge_Ba2I" style="color:#e74c3c"><span class="badgeTooltip_cWXP">This item is read only and cannot be modified.</span><span class="badgeToolTipTail_H9D_"><svg xmlns="http://www.w3.org/2000/svg" height="300px" width="300px" fill="#e74c3c" x="0px" y="0px" viewBox="0 0 96 96"><path d="M70.354,15.662h-7.496H25.566c-3.282,0-5.19-0.776-5.728-1.169v-1.456c0.538-0.393,2.445-1.168,5.728-1.168h46.479V8H25.566  c-4.776,0-9.594,1.468-9.594,4.747v61.458C15.972,86.645,20.328,88,37.495,88h42.535V15.662H70.354z"></path></svg> <!-- -->Read Only</span></span><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/concur/init.luau#L49"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Concur<!-- -->.<!-- -->Errors<!-- -->:<!-- --> </code> <code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Concur#Errors">Errors</a></code></div><div></div><h2 class="anchor anchorWithStickyNavbar_LWe7" id="functions">Functions<a href="#functions" class="hash-link" aria-label="Direct link to Functions" title="Direct link to Functions">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="spawn"><code style="text-decoration:none">spawn</code><a href="#spawn" class="hash-link" aria-label="Direct link to spawn" title="Direct link to spawn">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/concur/init.luau#L100"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Concur<!-- -->.</code><code class="green_DgR4">spawn</code><code>(</code><div class="inset_uKQm"><div><code>fn<!-- -->: </code><code class="blue_P4bS">AnyFn</code><code>,</code></div><div><code>...<!-- -->: </code><code class="blue_P4bS">any</code></div></div><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Concur">Concur</a></code></div><div>
+<p>Spawns the function using <code>task.spawn</code>.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> c <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">spawn</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	task<span class="token punctuation">.</span><span class="token function">wait</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span>
+	<span class="token keyword">return</span> <span class="token string">"Hello!"</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+c<span class="token punctuation">:</span><span class="token function">OnCompleted</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>err<span class="token punctuation">,</span> msg<span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token keyword">then</span>
+		<span class="token function">error</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+	<span class="token keyword">end</span>
+	<span class="token function">print</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span> <span class="token comment">--> Hello!</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="defer"><code style="text-decoration:none">defer</code><a href="#defer" class="hash-link" aria-label="Direct link to defer" title="Direct link to defer">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/concur/init.luau#L110"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Concur<!-- -->.</code><code class="green_DgR4">defer</code><code>(</code><div class="inset_uKQm"><div><code>fn<!-- -->: </code><code class="blue_P4bS">AnyFn</code><code>,</code></div><div><code>...<!-- -->: </code><code class="blue_P4bS">any</code></div></div><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Concur">Concur</a></code></div><div>
+<p>Same as <code>Concur.spawn</code>, but uses <code>task.defer</code> internally.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="delay"><code style="text-decoration:none">delay</code><a href="#delay" class="hash-link" aria-label="Direct link to delay" title="Direct link to delay">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/concur/init.luau#L120"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Concur<!-- -->.</code><code class="green_DgR4">delay</code><code>(</code><div class="inset_uKQm"><div><code>delayTime<!-- -->: </code><code class="blue_P4bS">number</code><code>,</code></div><div><code>fn<!-- -->: </code><code class="blue_P4bS">AnyFn</code><code>,</code></div><div><code>...<!-- -->: </code><code class="blue_P4bS">any</code></div></div><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Concur">Concur</a></code></div><div>
+<p>Same as <code>Concur.spawn</code>, but uses <code>task.delay</code> internally.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="value"><code style="text-decoration:none">value</code><a href="#value" class="hash-link" aria-label="Direct link to value" title="Direct link to value">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/concur/init.luau#L139"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Concur<!-- -->.</code><code class="green_DgR4">value</code><code>(</code><code>value<!-- -->: </code><code class="blue_P4bS">any</code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Concur">Concur</a></code></div><div>
+<p>Resolves to the given value right away.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> val <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">value</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span>
+val<span class="token punctuation">:</span><span class="token function">OnCompleted</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>v<span class="token punctuation">)</span>
+	<span class="token function">print</span><span class="token punctuation">(</span>v<span class="token punctuation">)</span> <span class="token comment">--> 10</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="event"><code style="text-decoration:none">event</code><a href="#event" class="hash-link" aria-label="Direct link to event" title="Direct link to event">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/concur/init.luau#L163"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Concur<!-- -->.</code><code class="green_DgR4">event</code><code>(</code><div class="inset_uKQm"><div><code>event<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/RBXScriptSignal" target="_blank" rel="noopener noreferrer">RBXScriptSignal<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code>,</code></div><div><code>predicate<!-- -->: </code><code class="purple_ieR2">(</code><code class="green_DgR4">(</code><code class="blue_P4bS">...any</code><code class="green_DgR4">)</code><code class="green_DgR4"> → </code><code class="blue_P4bS">boolean</code><code class="purple_ieR2">)</code><code class="blue_P4bS">?</code></div></div><code>) → </code><code>(</code><code>)</code></div><div>
+<p>
+  Completes the Concur instance once the event is fired and the predicate
+  function returns <code>true</code> (if no predicate is given, then completes once
+  the event first fires).
+</p>
+<p>The Concur instance will return the values given by the event.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token comment">-- Wait for next player to touch an object:</span>
+<span class="token keyword">local</span> touch <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">event</span><span class="token punctuation">(</span>part<span class="token punctuation">.</span>Touched<span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span>toucher<span class="token punctuation">)</span>
+	<span class="token keyword">return</span> Players<span class="token punctuation">:</span><span class="token function">GetPlayerFromCharacter</span><span class="token punctuation">(</span>toucher<span class="token punctuation">.</span>Parent<span class="token punctuation">)</span> <span class="token operator">~=</span> <span class="token keyword">nil</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+touch<span class="token punctuation">:</span><span class="token function">OnCompleted</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>err<span class="token punctuation">,</span> toucher<span class="token punctuation">)</span>
+	<span class="token function">print</span><span class="token punctuation">(</span>toucher<span class="token punctuation">)</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="all"><code style="text-decoration:none">all</code><a href="#all" class="hash-link" aria-label="Direct link to all" title="Direct link to all">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/concur/init.luau#L215"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Concur<!-- -->.</code><code class="green_DgR4">all</code><code>(</code><code>concurs<!-- -->: </code><code class="purple_ieR2">{</code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Concur">Concur</a></code><code class="purple_ieR2">}</code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Concur">Concur</a></code></div><div>
+<p>
+  Completes once <em>all</em> Concur instances have been completed. All values
+  will be available in a packed table in the same order they were passed.
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> c1 <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">spawn</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">return</span> <span class="token number">10</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+<span class="token keyword">local</span> c2 <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">delay</span><span class="token punctuation">(</span><span class="token number">0.5</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">return</span> <span class="token number">15</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+<span class="token keyword">local</span> c3 <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">value</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span>
+
+<span class="token keyword">local</span> c4 <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">spawn</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"failed"</span><span class="token punctuation">)</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+Concur<span class="token punctuation">.</span><span class="token function">all</span><span class="token punctuation">(</span><span class="token punctuation">{</span>c1<span class="token punctuation">,</span> c2<span class="token punctuation">,</span> c3<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token function">OnCompleted</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>err<span class="token punctuation">,</span> values<span class="token punctuation">)</span>
+	<span class="token function">print</span><span class="token punctuation">(</span>values<span class="token punctuation">)</span> <span class="token comment">--> {{nil, 10}, {nil, 15}, {nil, 20}, {"failed", nil}}</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="first"><code style="text-decoration:none">first</code><a href="#first" class="hash-link" aria-label="Direct link to first" title="Direct link to first">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/concur/init.luau#L259"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Concur<!-- -->.</code><code class="green_DgR4">first</code><code>(</code><code>concurs<!-- -->: </code><code class="purple_ieR2">{</code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Concur">Concur</a></code><code class="purple_ieR2">}</code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RbxUtil/api/Concur">Concur</a></code></div><div>
+<p>
+  Completes once the first Concur instance is completed <em>without an error</em>. All other Concur
+  instances are then stopped.
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> c1 <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">delay</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">return</span> <span class="token number">10</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+<span class="token keyword">local</span> c2 <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">delay</span><span class="token punctuation">(</span><span class="token number">0.5</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">return</span> <span class="token number">5</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+Concur<span class="token punctuation">.</span><span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">{</span>c1<span class="token punctuation">,</span> c2<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token function">OnCompleted</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>err<span class="token punctuation">,</span> num<span class="token punctuation">)</span>
+	<span class="token function">print</span><span class="token punctuation">(</span>num<span class="token punctuation">)</span> <span class="token comment">--> 5</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Stop"><code style="text-decoration:none">Stop</code><a href="#Stop" class="hash-link" aria-label="Direct link to Stop" title="Direct link to Stop">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/concur/init.luau#L310"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Concur<!-- -->:</code><code class="green_DgR4">Stop</code><code>(</code><code>) → </code><code>(</code><code>)</code></div><div>
+<p>
+  Stops the Concur instance. The underlying thread will be cancelled using
+  <code>task.cancel</code>. Any bound <code>OnCompleted</code> functions or threads waiting with
+  <code>Await</code> will be completed with the error <code>Concur.Errors.Stopped</code>.
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> c <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">spawn</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">for</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">10</span> <span class="token keyword">do</span>
+		<span class="token function">print</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span>
+		task<span class="token punctuation">.</span><span class="token function">wait</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+	<span class="token keyword">end</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+task<span class="token punctuation">.</span><span class="token function">wait</span><span class="token punctuation">(</span><span class="token number">2.5</span><span class="token punctuation">)</span>
+c<span class="token punctuation">:</span><span class="token function">Stop</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">-- At this point, will have only printed 1 and 2</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="IsCompleted"><code style="text-decoration:none">IsCompleted</code><a href="#IsCompleted" class="hash-link" aria-label="Direct link to IsCompleted" title="Direct link to IsCompleted">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/concur/init.luau#L325"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Concur<!-- -->:</code><code class="green_DgR4">IsCompleted</code><code>(</code><code>) → </code><code class="blue_P4bS">boolean</code></div><div>
+<p>Check if the Concur instance is finished.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Await"><code style="text-decoration:none">Await</code><a href="#Await" class="hash-link" aria-label="Direct link to Await" title="Direct link to Await">​</a></h3><span class="badge_Ba2I" style="color:#f1c40f"><span class="badgeTooltip_cWXP">This is a yielding function. When called, it will pause the Lua thread that called the function until a result is ready to be returned, without interrupting other scripts.</span><span class="badgeToolTipTail_H9D_"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="#f1c40f" role="img" aria-label="This is a yielding function. When called, it will pause the Lua thread that called the function until a result is ready to be returned, without interrupting other scripts."><path d="M96.4 11.9c-1.4-2.5-4-4-6.9-4H10.8c-2.9 0-5.4 1.5-6.9 4-1.4 2.5-1.4 5.5 0 7.9L43.3 88c1.4 2.5 4 4 6.9 4 2.9 0 5.4-1.5 6.9-4l39.3-68.2c1.4-2.4 1.4-5.4 0-7.9zM46.3 54.5c1.1-1.1 2.3-1.6 3.8-1.6s2.8.5 3.8 1.6c1.1 1.1 1.6 2.3 1.6 3.8s-.5 2.8-1.6 3.8c-1.1 1.1-2.3 1.6-3.8 1.6s-2.8-.5-3.8-1.6c-1.1-1.1-1.6-2.3-1.6-3.8.1-1.5.6-2.8 1.6-3.8zm-.5-4.9V21.8h8.8v27.8h-8.8z"></path></svg> <!-- -->Yields</span></span><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/concur/init.luau#L402"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Concur<!-- -->:</code><code class="green_DgR4">Await</code><code>(</code><code>timeout<!-- -->: </code><code class="blue_P4bS">number?</code><code>) → </code><code>(</code><div class="inset_uKQm"><div><code class="blue_P4bS">Error</code><code>,</code></div><div><code class="blue_P4bS">...any?</code></div></div><code>)</code></div><div>
+<p>Yields the calling thread until the Concur instance is completed:</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> c <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">delay</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">return</span> <span class="token string">"Hi"</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+<span class="token keyword">local</span> err<span class="token punctuation">,</span> msg <span class="token operator">=</span> c<span class="token punctuation">:</span><span class="token function">Await</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span> <span class="token comment">--> Hi</span>
+</code></pre>
+<p>
+  The <code>Await</code> method can be called <em>after</em> the Concur instance
+  has been completed too, in which case the completed values
+  will be returned immediately without yielding the thread:
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> c <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">spawn</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">return</span> <span class="token number">10</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+task<span class="token punctuation">.</span><span class="token function">wait</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span>
+<span class="token comment">-- Called after 'c' has been completed, but still captures the value:</span>
+<span class="token keyword">local</span> err<span class="token punctuation">,</span> num <span class="token operator">=</span> c<span class="token punctuation">:</span><span class="token function">Await</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span>num<span class="token punctuation">)</span> <span class="token comment">--> 10</span>
+</code></pre>
+<p>
+  It is always good practice to make sure that the <code>err</code> value is handled
+  by checking if it is not nil:
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> c <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">spawn</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"failed"</span><span class="token punctuation">)</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+<span class="token keyword">local</span> err<span class="token punctuation">,</span> value <span class="token operator">=</span> c<span class="token punctuation">:</span><span class="token function">Await</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token keyword">if</span> err <span class="token operator">~=</span> <span class="token keyword">nil</span> <span class="token keyword">then</span>
+	<span class="token function">print</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token comment">--> failed</span>
+	<span class="token comment">-- Handle error `err`</span>
+<span class="token keyword">else</span>
+	<span class="token comment">-- Handle `value`</span>
+<span class="token keyword">end</span>
+</code></pre>
+<p>
+  This will stop awaiting if the Concur instance was stopped
+  too, in which case the <code>err</code> will be equal to
+  <code>Concur.Errors.Stopped</code>:
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> c <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">delay</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">end</span><span class="token punctuation">)</span>
+c<span class="token punctuation">:</span><span class="token function">Stop</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">local</span> err <span class="token operator">=</span> c<span class="token punctuation">:</span><span class="token function">Await</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">if</span> err <span class="token operator">==</span> Concur<span class="token punctuation">.</span>Errors<span class="token punctuation">.</span>Stopped <span class="token keyword">then</span>
+	<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"Was stopped"</span><span class="token punctuation">)</span>
+<span class="token keyword">end</span>
+</code></pre>
+<p>
+  An optional timeout can be given, which will return the
+  <code>Concur.Errors.Timeout</code> error if timed out. Timing out
+  does <em>not</em> stop the Concur instance, so other callers
+  to <code>Await</code> or <code>OnCompleted</code> can still grab the resulting
+  values.
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> c <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">delay</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">end</span><span class="token punctuation">)</span>
+<span class="token keyword">local</span> err <span class="token operator">=</span> c<span class="token punctuation">:</span><span class="token function">Await</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token keyword">if</span> err <span class="token operator">==</span> Concur<span class="token punctuation">.</span>Errors<span class="token punctuation">.</span>Timeout <span class="token keyword">then</span>
+	<span class="token comment">-- Handle timeout</span>
+<span class="token keyword">end</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="OnCompleted"><code style="text-decoration:none">OnCompleted</code><a href="#OnCompleted" class="hash-link" aria-label="Direct link to OnCompleted" title="Direct link to OnCompleted">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/RbxUtil/blob/main/modules/concur/init.luau#L517"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Concur<!-- -->:</code><code class="green_DgR4">OnCompleted</code><code>(</code><div class="inset_uKQm"><div><code>fn<!-- -->: </code><code class="purple_ieR2">(</code><div class="inset_uKQm"><code class="blue_P4bS">Error</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code class="blue_P4bS">...any?</code></div><code class="purple_ieR2">)</code><code class="purple_ieR2"> → </code><code class="purple_ieR2">(</code><code class="purple_ieR2">)</code><code>,</code></div><div><code>timeout<!-- -->: </code><code class="blue_P4bS">number?</code></div></div><code>) → </code><code class="purple_ieR2">(</code><code class="purple_ieR2">)</code><code class="purple_ieR2"> → </code><code class="purple_ieR2">(</code><code class="purple_ieR2">)</code></div><div>
+<p>Calls the given function once the Concur instance is completed:</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> c <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">delay</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">return</span> <span class="token string">"Hi"</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+c<span class="token punctuation">:</span><span class="token function">OnCompleted</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>err<span class="token punctuation">,</span> msg<span class="token punctuation">)</span>
+	<span class="token function">print</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span> <span class="token comment">--> Hi</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+</code></pre>
+<p>
+  A function is returned that can be used to unbind the function to
+  no longer fire when the Concur instance is completed:
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> c <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">delay</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">end</span><span class="token punctuation">)</span>
+<span class="token keyword">local</span> unbind <span class="token operator">=</span> c<span class="token punctuation">:</span><span class="token function">OnCompleted</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"Completed"</span><span class="token punctuation">)</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+<span class="token function">unbind</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment">-- Never prints "Completed"</span>
+</code></pre>
+<p>
+  The <code>OnCompleted</code> method can be called <em>after</em> the Concur instance
+  has been completed too, in which case the given function will be
+  called immediately with the completed values:
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> c <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">spawn</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">return</span> <span class="token number">10</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+task<span class="token punctuation">.</span><span class="token function">wait</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span>
+<span class="token comment">-- Called after 'c' has been completed, but still captures the value:</span>
+c<span class="token punctuation">:</span><span class="token function">OnCompleted</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>err<span class="token punctuation">,</span> num<span class="token punctuation">)</span>
+	<span class="token function">print</span><span class="token punctuation">(</span>num<span class="token punctuation">)</span> <span class="token comment">--> 10</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+</code></pre>
+<p>
+  It is always good practice to make sure that the <code>err</code> value is handled
+  by checking if it is not nil:
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> c <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">spawn</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"failed"</span><span class="token punctuation">)</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+c<span class="token punctuation">:</span><span class="token function">OnCompleted</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>err<span class="token punctuation">,</span> value<span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">~=</span> <span class="token keyword">nil</span> <span class="token keyword">then</span>
+		<span class="token function">print</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token comment">--> failed</span>
+		<span class="token comment">-- Handle error `err`</span>
+		<span class="token keyword">return</span>
+	<span class="token keyword">end</span>
+	<span class="token comment">-- Handle `value`</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+</code></pre>
+<p>
+  This will call the function if the Concur instance was stopped
+  too, in which case the <code>err</code> will be equal to
+  <code>Concur.Errors.Stopped</code>:
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> c <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">delay</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">end</span><span class="token punctuation">)</span>
+c<span class="token punctuation">:</span><span class="token function">OnCompleted</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">==</span> Concur<span class="token punctuation">.</span>Errors<span class="token punctuation">.</span>Stopped <span class="token keyword">then</span>
+		<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"Was stopped"</span><span class="token punctuation">)</span>
+	<span class="token keyword">end</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+c<span class="token punctuation">:</span><span class="token function">Stop</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p>
+  An optional timeout can also be supplied, which will call the
+  function with the <code>Concur.Errors.Timeout</code> error:
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> c <span class="token operator">=</span> Concur<span class="token punctuation">.</span><span class="token function">delay</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">end</span><span class="token punctuation">)</span>
+c<span class="token punctuation">:</span><span class="token function">OnCompleted</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">==</span> Concur<span class="token punctuation">.</span>Errors<span class="token punctuation">.</span>Timeout <span class="token keyword">then</span>
+		<span class="token comment">-- Handle timeout</span>
+	<span class="token keyword">end</span>
+<span class="token keyword">end</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
+</code></pre>
+</div></div></article></div><details><summary>Show raw api</summary><pre style="max-width:100%;white-space:pre-wrap">{
+    &quot;functions&quot;: [
+        {
+            &quot;name&quot;: &quot;spawn&quot;,
+            &quot;desc&quot;: &quot;Spawns the function using `task.spawn`.\n\n```lua\nlocal c = Concur.spawn(function()\n\ttask.wait(5)\n\treturn \&quot;Hello!\&quot;\nend)\n\nc:OnCompleted(function(err, msg)\n\tif err then\n\t\terror(err)\n\tend\n\tprint(msg) --&gt; Hello!\nend))\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;fn&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;AnyFn&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;...&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;any&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Concur\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 100,
+                &quot;path&quot;: &quot;modules/concur/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;defer&quot;,
+            &quot;desc&quot;: &quot;Same as `Concur.spawn`, but uses `task.defer` internally.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;fn&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;AnyFn&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;...&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;any&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Concur\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 110,
+                &quot;path&quot;: &quot;modules/concur/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;delay&quot;,
+            &quot;desc&quot;: &quot;Same as `Concur.spawn`, but uses `task.delay` internally.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;delayTime&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;fn&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;AnyFn&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;...&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;any&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Concur\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 120,
+                &quot;path&quot;: &quot;modules/concur/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;value&quot;,
+            &quot;desc&quot;: &quot;Resolves to the given value right away.\n\n```lua\nlocal val = Concur.value(10)\nval:OnCompleted(function(v)\n\tprint(v) --&gt; 10\nend)\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;value&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;any&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Concur\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 139,
+                &quot;path&quot;: &quot;modules/concur/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;event&quot;,
+            &quot;desc&quot;: &quot;Completes the Concur instance once the event is fired and the predicate\nfunction returns `true` (if no predicate is given, then completes once\nthe event first fires).\n\nThe Concur instance will return the values given by the event.\n\n```lua\n-- Wait for next player to touch an object:\nlocal touch = Concur.event(part.Touched, function(toucher)\n\treturn Players:GetPlayerFromCharacter(toucher.Parent) ~= nil\nend)\n\ntouch:OnCompleted(function(err, toucher)\n\tprint(toucher)\nend)\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;event&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;RBXScriptSignal&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;predicate&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;((...any) -&gt; boolean)?&quot;
+                }
+            ],
+            &quot;returns&quot;: [],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 163,
+                &quot;path&quot;: &quot;modules/concur/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;all&quot;,
+            &quot;desc&quot;: &quot;Completes once _all_ Concur instances have been completed. All values\nwill be available in a packed table in the same order they were passed.\n\n```lua\nlocal c1 = Concur.spawn(function()\n\treturn 10\nend)\n\nlocal c2 = Concur.delay(0.5, function()\n\treturn 15\nend)\n\nlocal c3 = Concur.value(20)\n\nlocal c4 = Concur.spawn(function()\n\terror(\&quot;failed\&quot;)\nend)\n\nConcur.all({c1, c2, c3}):OnCompleted(function(err, values)\n\tprint(values) --&gt; {{nil, 10}, {nil, 15}, {nil, 20}, {\&quot;failed\&quot;, nil}}\nend)\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;concurs&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;{ Concur }&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Concur\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 215,
+                &quot;path&quot;: &quot;modules/concur/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;first&quot;,
+            &quot;desc&quot;: &quot;Completes once the first Concur instance is completed _without an error_. All other Concur\ninstances are then stopped.\n\n```lua\nlocal c1 = Concur.delay(1, function()\n\treturn 10\nend)\n\nlocal c2 = Concur.delay(0.5, function()\n\treturn 5\nend)\n\nConcur.first({c1, c2}):OnCompleted(function(err, num)\n\tprint(num) --&gt; 5\nend)\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;concurs&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;{ Concur }&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Concur\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 259,
+                &quot;path&quot;: &quot;modules/concur/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Stop&quot;,
+            &quot;desc&quot;: &quot;Stops the Concur instance. The underlying thread will be cancelled using\n`task.cancel`. Any bound `OnCompleted` functions or threads waiting with\n`Await` will be completed with the error `Concur.Errors.Stopped`.\n\n```lua\nlocal c = Concur.spawn(function()\n\tfor i = 1,10 do\n\t\tprint(i)\n\t\ttask.wait(1)\n\tend\nend)\n\ntask.wait(2.5)\nc:Stop() -- At this point, will have only printed 1 and 2\n```&quot;,
+            &quot;params&quot;: [],
+            &quot;returns&quot;: [],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 310,
+                &quot;path&quot;: &quot;modules/concur/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;IsCompleted&quot;,
+            &quot;desc&quot;: &quot;Check if the Concur instance is finished.&quot;,
+            &quot;params&quot;: [],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;boolean\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 325,
+                &quot;path&quot;: &quot;modules/concur/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Await&quot;,
+            &quot;desc&quot;: &quot;Yields the calling thread until the Concur instance is completed:\n\n```lua\nlocal c = Concur.delay(5, function()\n\treturn \&quot;Hi\&quot;\nend)\n\nlocal err, msg = c:Await()\nprint(msg) --&gt; Hi\n```\n\nThe `Await` method can be called _after_ the Concur instance\nhas been completed too, in which case the completed values\nwill be returned immediately without yielding the thread:\n\n```lua\nlocal c = Concur.spawn(function()\n\treturn 10\nend)\n\ntask.wait(5)\n-- Called after &#x27;c&#x27; has been completed, but still captures the value:\nlocal err, num = c:Await()\nprint(num) --&gt; 10\n```\n\nIt is always good practice to make sure that the `err` value is handled\nby checking if it is not nil:\n\n```lua\nlocal c = Concur.spawn(function()\n\terror(\&quot;failed\&quot;)\nend)\n\nlocal err, value = c:Await()\n\nif err ~= nil then\n\tprint(err) --&gt; failed\n\t-- Handle error `err`\nelse\n\t-- Handle `value`\nend\n```\n\nThis will stop awaiting if the Concur instance was stopped\ntoo, in which case the `err` will be equal to\n`Concur.Errors.Stopped`:\n\n```lua\nlocal c = Concur.delay(10, function() end)\nc:Stop()\nlocal err = c:Await()\nif err == Concur.Errors.Stopped then\n\tprint(\&quot;Was stopped\&quot;)\nend\n```\n\nAn optional timeout can be given, which will return the\n`Concur.Errors.Timeout` error if timed out. Timing out\ndoes _not_ stop the Concur instance, so other callers\nto `Await` or `OnCompleted` can still grab the resulting\nvalues.\n\n```lua\nlocal c = Concur.delay(10, function() end)\nlocal err = c:Await(1)\nif err == Concur.Errors.Timeout then\n\t-- Handle timeout\nend\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;timeout&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;number?&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Error&quot;
+                },
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;...any?&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;yields&quot;: true,
+            &quot;source&quot;: {
+                &quot;line&quot;: 402,
+                &quot;path&quot;: &quot;modules/concur/init.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;OnCompleted&quot;,
+            &quot;desc&quot;: &quot;Calls the given function once the Concur instance is completed:\n\n```lua\nlocal c = Concur.delay(5, function()\n\treturn \&quot;Hi\&quot;\nend)\n\nc:OnCompleted(function(err, msg)\n\tprint(msg) --&gt; Hi\nend)\n```\n\nA function is returned that can be used to unbind the function to\nno longer fire when the Concur instance is completed:\n\n```lua\nlocal c = Concur.delay(5, function() end)\nlocal unbind = c:OnCompleted(function()\n\tprint(\&quot;Completed\&quot;)\nend)\nunbind()\n-- Never prints \&quot;Completed\&quot;\n```\n\nThe `OnCompleted` method can be called _after_ the Concur instance\nhas been completed too, in which case the given function will be\ncalled immediately with the completed values:\n\n```lua\nlocal c = Concur.spawn(function()\n\treturn 10\nend)\n\ntask.wait(5)\n-- Called after &#x27;c&#x27; has been completed, but still captures the value:\nc:OnCompleted(function(err, num)\n\tprint(num) --&gt; 10\nend)\n```\n\nIt is always good practice to make sure that the `err` value is handled\nby checking if it is not nil:\n\n```lua\nlocal c = Concur.spawn(function()\n\terror(\&quot;failed\&quot;)\nend)\n\nc:OnCompleted(function(err, value)\n\tif err ~= nil then\n\t\tprint(err) --&gt; failed\n\t\t-- Handle error `err`\n\t\treturn\n\tend\n\t-- Handle `value`\nend)\n```\n\nThis will call the function if the Concur instance was stopped\ntoo, in which case the `err` will be equal to\n`Concur.Errors.Stopped`:\n\n```lua\nlocal c = Concur.delay(10, function() end)\nc:OnCompleted(function(err)\n\tif err == Concur.Errors.Stopped then\n\t\tprint(\&quot;Was stopped\&quot;)\n\tend\nend)\nc:Stop()\n```\n\nAn optional timeout can also be supplied, which will call the\nfunction with the `Concur.Errors.Timeout` error:\n\n```lua\nlocal c = Concur.delay(10, function() end)\nc:OnCompleted(function(err)\n\tif err == Concur.Errors.Timeout then\n\t\t-- Handle timeout\n\tend\nend, 1)\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;fn&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;(Error, ...any?) -&gt; ()&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;timeout&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;number?&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;() -&gt; ()\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 517,
+                &quot;path&quot;: &quot;modules/concur/init.luau&quot;
+            }
+        }
+    ],
+    &quot;properties&quot;: [
+        {
+            &quot;name&quot;: &quot;Errors&quot;,
+            &quot;desc&quot;: &quot;&quot;,
+            &quot;lua_type&quot;: &quot;Errors&quot;,
+            &quot;readonly&quot;: true,
+            &quot;source&quot;: {
+                &quot;line&quot;: 49,
+                &quot;path&quot;: &quot;modules/concur/init.luau&quot;
+            }
+        }
+    ],
+    &quot;types&quot;: [
+        {
+            &quot;name&quot;: &quot;Errors&quot;,
+            &quot;desc&quot;: &quot;&quot;,
+            &quot;fields&quot;: [
+                {
+                    &quot;name&quot;: &quot;Stopped&quot;,
+                    &quot;lua_type&quot;: &quot;\&quot;Stopped\&quot;&quot;,
+                    &quot;desc&quot;: &quot;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Timeout&quot;,
+                    &quot;lua_type&quot;: &quot;\&quot;Timeout\&quot;&quot;,
+                    &quot;desc&quot;: &quot;&quot;
+                }
+            ],
+            &quot;source&quot;: {
+                &quot;line&quot;: 43,
+                &quot;path&quot;: &quot;modules/concur/init.luau&quot;
+            }
+        }
+    ],
+    &quot;name&quot;: &quot;Concur&quot;,
+    &quot;desc&quot;: &quot;Concurrency class for helping run tasks concurrently. In other words, Concur allows\ndevelopers to watch coroutines/threads. Completion status, returned values, and\nerrors can all be tracked.\n\nFor instance, Concur could be used to concurrently save all player data\nat the same time when the game closes down:\n\n```lua\ngame:BindToClose(function()\n\tlocal all = {}\n\tfor _,player in Players:GetPlayers() do\n\t\tlocal save = Concur.spawn(function()\n\t\t\tDoSomethingToSaveData(player)\n\t\tend)\n\t\ttable.insert(all, save)\n\tend\n\tlocal allConcur = Concur.all(all)\n\tallConcur:Await()\nend)\n```&quot;,
+    &quot;source&quot;: {
+        &quot;line&quot;: 34,
+        &quot;path&quot;: &quot;modules/concur/init.luau&quot;
+    }
+}</pre></details></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#types" class="table-of-contents__link toc-highlight">Types</a><ul><li><a href="#Errors" class="table-of-contents__link toc-highlight">Errors</a></li></ul></li><li><a href="#properties" class="table-of-contents__link toc-highlight">Properties</a><ul><li><a href="#Errors" class="table-of-contents__link toc-highlight">Errors</a></li></ul></li><li><a href="#functions" class="table-of-contents__link toc-highlight">Functions</a><ul><li><a href="#Await" class="table-of-contents__link toc-highlight">:Await</a></li><li><a href="#IsCompleted" class="table-of-contents__link toc-highlight">:IsCompleted</a></li><li><a href="#OnCompleted" class="table-of-contents__link toc-highlight">:OnCompleted</a></li><li><a href="#Stop" class="table-of-contents__link toc-highlight">:Stop</a></li><li><a href="#all" class="table-of-contents__link toc-highlight">.all</a></li><li><a href="#defer" class="table-of-contents__link toc-highlight">.defer</a></li><li><a href="#delay" class="table-of-contents__link toc-highlight">.delay</a></li><li><a href="#event" class="table-of-contents__link toc-highlight">.event</a></li><li><a href="#first" class="table-of-contents__link toc-highlight">.first</a></li><li><a href="#spawn" class="table-of-contents__link toc-highlight">.spawn</a></li><li><a href="#value" class="table-of-contents__link toc-highlight">.value</a></li></ul></li></ul></div></div></div></div></main></div></div><footer class="footer footer--dark"><div class="container container-fluid"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2025 thelegendaryjohn. Built with Moonwave and Docusaurus.</div></div></div></footer></div>
+</body>
+</html>
